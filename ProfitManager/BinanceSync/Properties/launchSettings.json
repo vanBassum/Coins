@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BinanceSync": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

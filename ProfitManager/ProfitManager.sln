@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRMLib", "..\lib\FRMLib\FRM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STDLib", "..\lib\STDLib\STDLib.csproj", "{AE62BE03-92D8-408D-BE18-737C3243021A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceSync", "..\BinanceSync\BinanceSync.csproj", "{699A7D75-3C60-419C-805B-8F540BBCCC97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceSync", "BinanceSync\BinanceSync.csproj", "{EBB606EE-28DE-4CFC-BAEF-E7765183B04F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{AE62BE03-92D8-408D-BE18-737C3243021A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE62BE03-92D8-408D-BE18-737C3243021A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE62BE03-92D8-408D-BE18-737C3243021A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{699A7D75-3C60-419C-805B-8F540BBCCC97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{699A7D75-3C60-419C-805B-8F540BBCCC97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{699A7D75-3C60-419C-805B-8F540BBCCC97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{699A7D75-3C60-419C-805B-8F540BBCCC97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBB606EE-28DE-4CFC-BAEF-E7765183B04F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBB606EE-28DE-4CFC-BAEF-E7765183B04F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBB606EE-28DE-4CFC-BAEF-E7765183B04F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBB606EE-28DE-4CFC-BAEF-E7765183B04F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
