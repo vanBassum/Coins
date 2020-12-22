@@ -6,6 +6,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["BinanceSync/BinanceSync.csproj", "BinanceSync/"]
+COPY ["lib/STDLib/STDLib.csproj", "lib/STDLib/"]
 RUN dotnet restore "BinanceSync/BinanceSync.csproj"
 COPY . .
 WORKDIR "/src/BinanceSync"

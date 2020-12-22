@@ -163,15 +163,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\lib\FRMLib\FRMLib.csproj">
-      <Project>{6062fc18-1c98-4f9a-be4c-44171cbcb55e}</Project>
-      <Name>FRMLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\lib\STDLib\STDLib.csproj">
-      <Project>{ae62be03-92d8-408d-be18-737c3243021a}</Project>
-      <Name>STDLib</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
