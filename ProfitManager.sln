@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceSync", "BinanceSync\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STDLib", "lib\STDLib\STDLib.csproj", "{C1E32E96-7BDB-4ECF-A948-7BBB4A5A4695}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRMLib", "lib\FRMLib\FRMLib.csproj", "{6062FC18-1C98-4F9A-BE4C-44171CBCB55E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C1E32E96-7BDB-4ECF-A948-7BBB4A5A4695}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1E32E96-7BDB-4ECF-A948-7BBB4A5A4695}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1E32E96-7BDB-4ECF-A948-7BBB4A5A4695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6062FC18-1C98-4F9A-BE4C-44171CBCB55E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6062FC18-1C98-4F9A-BE4C-44171CBCB55E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6062FC18-1C98-4F9A-BE4C-44171CBCB55E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6062FC18-1C98-4F9A-BE4C-44171CBCB55E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

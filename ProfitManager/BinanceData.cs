@@ -2,9 +2,12 @@
 using STDLib.Saveable;
 using System.Collections.Generic;
 
-namespace BinanceSync
+namespace ProfitManager
 {
-    public class Data : BaseSettingsV2<Data>
+    /// <summary>
+    /// https://binance-docs.github.io/apidocs/spot/en/#public-api-definitions
+    /// </summary>
+    public class BinanceData : BaseSettingsV2<BinanceData>
     {
         public List<BinanceStreamAccountInfo> BinanceStreamAccountInfos { get => GetPar(new List<BinanceStreamAccountInfo>()); }
         public List<BinanceStreamOrderUpdate> BinanceStreamOrderUpdates { get => GetPar(new List<BinanceStreamOrderUpdate>()); }
