@@ -25,14 +25,18 @@ using STDLib.Math;
 using STDLib.Extentions;
 using FRMLib.Scope.Controls;
 using System.Collections;
+using CoinGecko.Entities.Response.Coins;
 
 namespace ProfitManager
 {
     public partial class Form1 : Form
     {
-        ScopeController scopeController = new ScopeController();
+        
         BindingList<Balance> balances = new BindingList<Balance>();
         SaveableBindingList<Trade> trades = new SaveableBindingList<Trade>("data\\trades.json");
+        ScopeController scopeController1 = new ScopeController();
+        ScopeController scopeController2 = new ScopeController();
+        ScopeController scopeController3 = new ScopeController();
 
         public Form1()
         {
@@ -44,24 +48,25 @@ namespace ProfitManager
             Settings.Load();
             BinanceAPI.Init();
             trades.Load();
-
-            AddWithdrawalsAndDeposits();
-            AddFIAT();
-            ParseBinanceOrders();
             ParseBinanceStreamOrders();
             CalcBalances();
-
             trades.Save();
-
+            Task task = new Task(GetHistories);
+            task.Start();
             dataGridView1.DataSource = trades;
             dataGridView2.DataSource = balances;
-            scopeView1.DataSource = scopeController;
-            markerView1.DataSource = scopeController;
-            traceView1.DataSource = scopeController;
-
             dataGridView1.ColumnHeaderMouseClick += DataGridView_ColumnHeaderMouseClick;
             dataGridView2.ColumnHeaderMouseClick += DataGridView_ColumnHeaderMouseClick;
-            //DoScope();
+
+            scopeView1.DataSource = scopeController1;
+            markerView1.DataSource = scopeController1;
+            traceView1.DataSource = scopeController1;
+            scopeView2.DataSource = scopeController2;
+            markerView2.DataSource = scopeController2;
+            traceView2.DataSource = scopeController2;
+            scopeView3.DataSource = scopeController3;
+            markerView3.DataSource = scopeController3;
+            traceView3.DataSource = scopeController3;
         }
 
         private void DataGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -128,7 +133,7 @@ namespace ProfitManager
             List<BinanceStreamOrderUpdate> orderUpdates = binanceStreamOrderUpdates.ReadAll();
 
 
-            foreach(BinanceStreamOrderUpdate orderUpdate in orderUpdates.Where(a=>a.Status == Binance.Net.Enums.OrderStatus.Filled))
+            foreach(BinanceStreamOrderUpdate orderUpdate in orderUpdates.Where(a=>a.Status == Binance.Net.Enums.OrderStatus.Filled || a.Status == Binance.Net.Enums.OrderStatus.PartiallyFilled))
             {
                 var symbols = BinanceAPI.Instance.GetAllSymbols();
                 var symbol = symbols.FirstOrDefault(a => a.Name == orderUpdate.Symbol);
@@ -188,65 +193,137 @@ namespace ProfitManager
             return dtDateTime;
         }
 
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(scopeController.Traces.Count == 0)
-            {
-                DoScope();
-            }
-        }
+        
+
+        Dictionary<string, MarketChartById> coinHistories = new Dictionary<string, MarketChartById>();
 
 
-        void DoScope()
+        void GetHistories()
         {
+            
             ICoinGeckoClient client = CoinGeckoClient.Instance;
             var coinList = client.CoinsClient.GetCoinList().Result;
-            scopeController.Clear();
-            trades.SortBy(a => a.Timestamp);
-            DateTime from = trades.First().Timestamp;
-            List<string> assets = new List<string>();
+            this.InvokeIfRequired(()=>trades.SortBy(a => a.Timestamp));
+            DateTime from = trades.First().Timestamp.AddHours(-5);
             foreach (Trade t in trades)
             {
-                assets.Add(t.BoughtAsset);
-                assets.Add(t.SoldAsset);
+                GetHistory(client, from, coinList, t.BoughtAsset);
+                GetHistory(client, from, coinList, t.SoldAsset);
             }
-            var uniqueAssets = assets.Distinct();
-            foreach (string asset in uniqueAssets.Where(a=>a != null))
+            this.InvokeIfRequired(()=>this.Text = "loaded");
+        }
+
+        void GetHistory(ICoinGeckoClient client, DateTime from, IReadOnlyList<CoinList> coinList, string asset)
+        {
+            if (asset != null)
             {
-                Trace trace = new Trace()
-                {
-                    Name = asset,
-                    DrawStyle = Trace.DrawStyles.NonInterpolatedLine,
-                    Pen = Palettes.DistinctivePallet[scopeController.Traces.Count],
-                };
-                scopeController.Traces.Add(trace);
-                var filteredTrades = trades.Where(a => a.SoldAsset == asset || a.BoughtAsset == asset);
                 var coin = coinList.Where(a => a.Symbol.ToLower() == asset.ToLower()).FirstOrDefault();
-                if (coin != null)
+                if (!coinHistories.ContainsKey(asset))
                 {
-                    var hist = client.CoinsClient.GetMarketChartRangeByCoinId(coin.Id, "usd", Unix(from).ToString(), Unix(DateTime.Now).ToString()).Result;
-                    foreach (var t in hist.Prices)
+                    coinHistories[asset] = client.CoinsClient.GetMarketChartRangeByCoinId(coin.Id, "usd", Unix(from).ToString(), Unix(DateTime.Now).ToString()).Result;
+                    this.InvokeIfRequired(() => 
                     {
-                        DateTime time = UnixTimeStampToDateTime(t[0] / 1000);
-                        var v = filteredTrades.Where(a => a.Timestamp < time).Sum(a => a.GetAmount(asset));
-                        trace.Points.Add(time.Ticks, t[1] * (double)v);
-                    }
-
-                    foreach(Trade t in filteredTrades)
-                    {
-                        LinkedMarker marker = new LinkedMarker(trace, t.Timestamp.Ticks) { Text = t.ToString() };
-
-                        scopeController.Markers.Add(marker);
-                    }
-
+                        DoScope1(asset, coinHistories[asset]);
+                        DoScope2(asset, coinHistories[asset]);
+                        DoScope3(asset, coinHistories[asset]);
+                    });
+                    
                 }
-                scopeView1.AutoScaleTraceKeepZero(trace);
+            }
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
+
+        void DoScope1(string asset, MarketChartById hist)
+        {
+            var filteredTrades = trades.Where(a => a.SoldAsset == asset || a.BoughtAsset == asset);
+            Trace trace = new Trace()
+            {
+                Name = asset,
+                DrawStyle = Trace.DrawStyles.NonInterpolatedLine,
+                Pen = Palettes.DistinctivePallet[scopeController1.Traces.Count],
+            };
+            scopeController1.Traces.Add(trace);
+            foreach (var t in hist.Prices)
+            {
+                DateTime time = UnixTimeStampToDateTime(t[0] / 1000);
+                var v = filteredTrades.Where(a => a.Timestamp < time).Sum(a => a.GetAmount(asset));
+                trace.Points.Add(time.Ticks, t[1] * (double)v);
             }
 
+            foreach(Trade t in filteredTrades)
+            {
+                LinkedMarker marker = new LinkedMarker(trace, t.Timestamp.Ticks) { Text = t.ToString() };
+
+                scopeController1.Markers.Add(marker);
+            }
+            scopeView1.AutoScaleTraceKeepZero(trace);
             scopeView1.AutoScaleHorizontal();
         }
-    }
 
+        void DoScope2(string asset, MarketChartById hist)
+        {
+            var filteredTrades = trades.Where(a => a.SoldAsset == asset || a.BoughtAsset == asset);
+            Trace trace = new Trace()
+            {
+                Name = asset,
+                DrawStyle = Trace.DrawStyles.NonInterpolatedLine,
+                Pen = Palettes.DistinctivePallet[scopeController2.Traces.Count],
+            };
+            scopeController2.Traces.Add(trace);
+            foreach (var t in hist.Prices)
+            {
+                DateTime time = UnixTimeStampToDateTime(t[0] / 1000);
+                trace.Points.Add(time.Ticks, t[1]);
+            }
+
+            foreach (Trade t in filteredTrades)
+            {
+                decimal price = t.GetPrice();
+                LinkedMarker marker = new LinkedMarker(trace, t.Timestamp.Ticks) { Point = new PointD(t.Timestamp.Ticks, (double)price), Text = t.ToString() };
+
+                scopeController2.Markers.Add(marker);
+            }
+            scopeView2.AutoScaleTraceKeepZero(trace);
+            scopeView2.AutoScaleHorizontal();
+        }
+
+        void DoScope3(string asset, MarketChartById hist)
+        {
+            return;
+            var filteredTrades = trades.Where(a => a.SoldAsset == asset || a.BoughtAsset == asset);
+            Trace trace = new Trace()
+            {
+                Name = asset,
+                DrawStyle = Trace.DrawStyles.NonInterpolatedLine,
+                Pen = Palettes.DistinctivePallet[scopeController3.Traces.Count],
+            };
+            scopeController3.Traces.Add(trace);
+
+
+            foreach (var t in hist.Prices)
+            {
+                DateTime time = UnixTimeStampToDateTime(t[0] / 1000);
+                decimal avgPrice = 0;
+                try
+                {
+                    avgPrice = filteredTrades.Where(a => a.Timestamp < time).Average(a => a.GetPrice());
+                }
+                catch(Exception ex)
+                {
+
+                }
+                trace.Points.Add(time.Ticks, (double)avgPrice);
+            }
+
+            scopeView3.AutoScaleTraceKeepZero(trace);
+            scopeView3.AutoScaleHorizontal();
+        }
+
+
+    }
 }
 
 

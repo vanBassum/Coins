@@ -11,13 +11,13 @@ namespace ProfitManager
         public decimal Amount { get; set; }
 
 
-        decimal _UsdValue = 0;
+        decimal _UsdValue = 1;
         private decimal UsdValue 
         { 
             get
             {
-                if (_UsdValue == 0)
-                    GetusdValue();
+                //if (_UsdValue == 0)
+                //    GetusdValue();
                 return _UsdValue;
             }
         }

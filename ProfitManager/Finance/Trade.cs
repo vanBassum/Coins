@@ -94,6 +94,14 @@ namespace ProfitManager
             return 0;
         }
 
+        public decimal GetPrice()
+        {
+            decimal price = 0;
+            if (BoughtQuantity != 0)
+                price = SoldQuantity / BoughtQuantity;
+            return price;
+        }
+
         public override string ToString()
         {
             return $"{SoldAsset} => {BoughtAsset}";

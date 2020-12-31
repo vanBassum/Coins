@@ -66,10 +66,7 @@ namespace BinanceSync
                     (a) => OrderLists.Add(a),
                     (a) => PositionsUpdates.Add(a),
                     (a) => BalanceUpdates.Add(a));
-                
 
-                socketClient.Spot.SubscribeToAggregatedTradeUpdates(v, (a) => AggregatedTrades.Add(a));
-                socketClient.Spot.SubscribeToTradeUpdates(v, (a) => Trades.Add(a));
             }
         }
 
